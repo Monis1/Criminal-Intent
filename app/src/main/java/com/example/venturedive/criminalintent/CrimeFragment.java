@@ -50,8 +50,6 @@ public class CrimeFragment extends Fragment{
     public static final int REQUEST_DATE=0;
     public static final String TAG="CrimeFragment";
     private static final int REQUEST_CONTACT=2;
-    private CallBacks mCallBacks;
-
 
 
     public static CrimeFragment NewInstance(UUID crime_id){
@@ -63,17 +61,7 @@ public class CrimeFragment extends Fragment{
     }
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mCallBacks=(CallBacks)context;
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallBacks=null;
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -84,7 +72,6 @@ public class CrimeFragment extends Fragment{
             Date date=(Date)data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
             mDateButton.setText(mCrime.getDate().toString());
-            mCallBacks.onCrimeUpdated(mCrime);
         }
         else if(requestCode==REQUEST_CONTACT)
         {
@@ -97,7 +84,6 @@ public class CrimeFragment extends Fragment{
             }
             c.moveToFirst();
             mSuspectButton.setText("");
-            mCallBacks.onCrimeUpdated(mCrime);
             c.close();
         }
     }
@@ -172,7 +158,6 @@ public class CrimeFragment extends Fragment{
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
-                mCallBacks.onCrimeUpdated(mCrime);
             }
 
             @Override
@@ -200,13 +185,10 @@ public class CrimeFragment extends Fragment{
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
-                mCallBacks.onCrimeUpdated(mCrime);
             }
         });
         return view;
     }
 
-    public interface CallBacks {
-        void onCrimeUpdated(Crime crime);
-    }
+
 }

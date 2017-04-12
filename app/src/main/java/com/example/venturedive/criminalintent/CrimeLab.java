@@ -1,6 +1,7 @@
 package com.example.venturedive.criminalintent;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -18,12 +19,15 @@ public class CrimeLab {
     private static CrimeLab sCrimeLab;
     private Context mAppContext;
     private StorageFactory mFactory;
+    private boolean mFromDb;
 
     private CrimeLab(Context appContext){
         mAppContext=appContext;
+        mFromDb=mAppContext.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE).getBoolean("from_db",true);
         mFactory=new StorageFactory(mAppContext,FILENAME);
         try {
-            mCrimes = mFactory.LoadData(CrimeSettingsFragment.mFromDb);
+            Log.d(TAG,mAppContext.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE).getBoolean("from_db",true)+"");
+            mCrimes = mFactory.LoadData(mFromDb);
         } catch (Exception e) {
             mCrimes = new ArrayList<>();
             Log.e(TAG, "Error loading crimes: ", e);
@@ -32,7 +36,7 @@ public class CrimeLab {
 
     public boolean SaveCrimes(){
         try{
-            mFactory.SaveData(CrimeSettingsFragment.mFromDb,mCrimes);
+            mFactory.SaveData(mFromDb,mCrimes);
             Log.d(TAG,"Crimes saved to file");
             return true;
         }

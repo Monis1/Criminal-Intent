@@ -1,7 +1,5 @@
 package com.example.venturedive.criminalintent;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,24 +31,6 @@ public class CrimeListFragment extends Fragment {
 
     private ArrayList<Crime> mCrimes;
     private ListView mListView;
-    private static CrimeListActivity ActivityList;
-    private CallBacks mCallBacks;
-
-    public interface CallBacks{
-        void OnCrimeSelected(Crime crime);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mCallBacks=(CallBacks)context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallBacks=null;
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +54,6 @@ public class CrimeListFragment extends Fragment {
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-
             }
 
             @Override
@@ -110,14 +89,15 @@ public class CrimeListFragment extends Fragment {
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-
             }
         });
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Crime c=((CrimeAdapter)mListView.getAdapter()).getItem(position);
-                mCallBacks.OnCrimeSelected(c);
+                Intent i=new Intent(getActivity(),CrimePagerActivity.class);
+                i.putExtra(CrimeFragment.EXTRA_CRIME_ID,c.getId());
+                startActivity(i);
             }
         });
         return view;
@@ -158,25 +138,22 @@ public class CrimeListFragment extends Fragment {
     }
 
 
-    public void updateUI() {
-        ((CrimeAdapter)mListView.getAdapter()).notifyDataSetChanged();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.menu_item_new_crime:
                 Crime crime=new Crime();
                 CrimeLab.Get(getActivity()).AddCrime(crime);
-                ((CrimeAdapter)mListView.getAdapter()).notifyDataSetChanged();
-                mCallBacks.OnCrimeSelected(crime);
+                Intent i=new Intent(getActivity(),CrimePagerActivity.class);
+                i.putExtra(CrimeFragment.EXTRA_CRIME_ID,crime.getId());
+                startActivityForResult(i,0);
                 return true;
             case R.id.menu_item_settings:
                 Intent i1=new Intent(getActivity(),CrimeSettingsActivity.class);
                 startActivity(i1);
                 return true;
-                default:
-                    return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -198,11 +175,9 @@ public class CrimeListFragment extends Fragment {
             TextView titleTextView=(TextView)convertView.findViewById(R.id.crime_title_label);
             TextView dateTextView=(TextView)convertView.findViewById(R.id.crime_date_label);
             CheckBox solvedCheckBox=(CheckBox)convertView.findViewById(R.id.crime_solved);
-
             titleTextView.setText(c.getTitle());
             dateTextView.setText(c.getDate().toString());
             solvedCheckBox.setChecked(c.isSolved());
-
             return convertView;
         }
     }

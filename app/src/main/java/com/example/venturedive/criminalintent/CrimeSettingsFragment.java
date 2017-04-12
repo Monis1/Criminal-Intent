@@ -16,7 +16,7 @@ import android.widget.ToggleButton;
 public class CrimeSettingsFragment extends Fragment {
 
     ToggleButton mDbToggleButton;
-    public static boolean mFromDb;
+    boolean mFromDb;
     SharedPreferences mSharedPreferences;
     public static final String PREFERENCES = "MyPreferences" ;
 
@@ -26,7 +26,7 @@ public class CrimeSettingsFragment extends Fragment {
         getActivity().setTitle(R.string.settings);
         mDbToggleButton=(ToggleButton)view.findViewById(R.id.use_db_toggle_button);
         mSharedPreferences=getActivity().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        mDbToggleButton.setChecked(mSharedPreferences.getBoolean("from_db",false));
+        mDbToggleButton.setChecked(mSharedPreferences.getBoolean("from_db",true));
         mFromDb=mDbToggleButton.isChecked();
         mDbToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
